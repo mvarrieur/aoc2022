@@ -3,17 +3,15 @@ const input = Deno.readTextFileSync("./input.txt");
 // Parse the input into an array of pairs of assignments
 const pairs = input.split("\n").map((line) => line.split(","));
 
-function intersection(setA: Set<unknown>, setB: Set<unknown>) {
-  const _intersection = new Set();
+function difference(setA: Set<number>, setB: Set<number>) {
+  const _difference = new Set(setA);
   for (const elem of setB) {
-    if (setA.has(elem)) {
-      _intersection.add(elem);
-    }
+    _difference.delete(elem);
   }
-  return _intersection;
+  return _difference;
 }
 
-let intersected = 0;
+let fullyContained = 0;
 
 pairs.forEach((p) => {
   const elf1Sections = p[0].split("-").map((x) => +x);
@@ -28,11 +26,18 @@ pairs.forEach((p) => {
     elf2Set.add(i);
   }
 
-  const i = intersection(elf1Set, elf2Set);
+  const d1 = difference(elf1Set, elf2Set);
+  const d2 = difference(elf2Set, elf1Set);
 
-  if (i.size > 0) {
-    intersected++;
+  if (d1.size === 0) {
+    fullyContained++;
+  }
+  if (d2.size === 0) {
+    fullyContained++;
+  }
+  if (d1.size === 0 && d2.size === 0) {
+    fullyContained--;
   }
 });
 
-console.log({ intersected });
+console.log({ fullyContained });
